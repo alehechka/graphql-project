@@ -1,0 +1,13 @@
+{
+  "name": "graphql-project",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/alehechka/graphql-tutorial.git",
+  "author": "Adam Lehechka (https://github.com/alehechka)",
+  "license": "MIT",
+  "scripts": {
+    "pregit": "git add *",
+    "git": "git commit",
+    "postgit": "git push"
+  }
+}
