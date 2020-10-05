@@ -1,5 +1,6 @@
-import { Arg, Field, InputType, Int, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Field, InputType, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Movie } from '../entities';
+import { isAuth } from '../middleware';
 
 @InputType()
 class MovieUpdateInput {
@@ -34,6 +35,7 @@ class MovieQueryInput extends MovieUpdateInput {
 @Resolver()
 export class MovieResolver {
 	@Mutation(() => Movie)
+	@UseMiddleware(isAuth)
 	async createMovie(
 		@Arg('input', () => MovieCreateInput)
 		options: MovieCreateInput
@@ -43,18 +45,21 @@ export class MovieResolver {
 	}
 
 	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
 	async updateMovie(@Arg('id') id: string, @Arg('input', () => MovieUpdateInput) input: MovieUpdateInput) {
 		await Movie.update({ id }, input);
 		return true;
 	}
 
 	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
 	async deleteMovie(@Arg('id') id: string) {
 		await Movie.delete({ id });
 		return true;
 	}
 
 	@Query(() => [Movie])
+	@UseMiddleware(isAuth)
 	async movies(@Arg('options', () => MovieQueryInput, { nullable: true }) options: MovieQueryInput) {
 		return await Movie.find(options);
 	}

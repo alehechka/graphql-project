@@ -1,9 +1,10 @@
 import bcrypt from 'bcryptjs';
-import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { User } from '../entities';
 import { AuthInput } from '../graphql-types/AuthInput';
 import { MyContext } from '../graphql-types/MyContext';
 import { UserResponse } from '../graphql-types/UserResponse';
+import { isAuth } from '../middleware';
 
 const invalidLoginResponse = {
 	errors: [
@@ -65,6 +66,7 @@ export class AuthResolver {
 	}
 
 	@Query(() => User, { nullable: true })
+	@UseMiddleware(isAuth)
 	async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
 		if (!ctx.req.session!.userId) {
 			return undefined;
