@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
-import { User } from '../entity/User';
+import { User } from '../entities';
 import { AuthInput } from '../graphql-types/AuthInput';
 import { MyContext } from '../graphql-types/MyContext';
 import { UserResponse } from '../graphql-types/UserResponse';
@@ -19,7 +19,8 @@ export class AuthResolver {
 	@Mutation(() => UserResponse)
 	async register(
 		@Arg('input')
-		{ email, password }: AuthInput
+		{ email, password }: AuthInput,
+		@Ctx() ctx: MyContext
 	): Promise<UserResponse> {
 		const existingUser = await User.findOne({ email });
 		if (existingUser) {
@@ -38,6 +39,8 @@ export class AuthResolver {
 			email,
 			password: hashedPassword,
 		}).save();
+
+		ctx.req.session!.userId = user.id;
 
 		return { user };
 	}
