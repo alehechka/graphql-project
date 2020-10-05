@@ -34,7 +34,10 @@ class MovieQueryInput extends MovieUpdateInput {
 @Resolver()
 export class MovieResolver {
 	@Mutation(() => Movie)
-	async createMovie(@Arg('input', () => MovieCreateInput) options: MovieCreateInput) {
+	async createMovie(
+		@Arg('input', () => MovieCreateInput)
+		options: MovieCreateInput
+	) {
 		const movie = await Movie.create(options).save();
 		return movie;
 	}
