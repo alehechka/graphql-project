@@ -9,5 +9,10 @@
     "pregit": "git add *",
     "git": "git commit",
     "postgit": "git push"
-  }
+  },
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ]
 }
