@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from 'type-graphql';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Director } from './Director';
 
 @ObjectType()
 @Entity()
@@ -23,4 +24,8 @@ export class Movie extends BaseEntity {
 	@Field(() => Int, { nullable: true })
 	@Column('int', { nullable: true })
 	rating: number;
+
+	@Field(() => Director, {nullable: true})
+	@ManyToOne(() => Director, director => director.movies) 
+	director: Director;
 }

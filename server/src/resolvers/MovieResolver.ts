@@ -3,6 +3,12 @@ import { Movie } from '../entities';
 import { isAuth } from '../middleware';
 
 @InputType()
+class DirectorInput {
+	@Field()
+	id: string
+}
+
+@InputType()
 class MovieUpdateInput {
 	@Field(() => String, { nullable: true })
 	title?: string;
@@ -15,6 +21,11 @@ class MovieUpdateInput {
 
 	@Field(() => Int, { nullable: true })
 	rating?: number;
+
+	@Field(() => DirectorInput, { nullable: true })
+	director: {
+		id: string
+	};
 }
 
 @InputType()
@@ -24,6 +35,11 @@ class MovieCreateInput extends MovieUpdateInput {
 
 	@Field(() => Int)
 	minutes: number;
+
+	@Field(() => DirectorInput, { nullable: true })
+	director: {
+		id: string
+	};
 }
 
 @InputType()
