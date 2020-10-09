@@ -26,4 +26,3 @@ jobs:
           minor-wording: 'MINOR,feature'
           major-wording: 'MAJOR,BREAKING'
           rc-wording: 'RC,release'
-          patch-wording: 'patch,fix'
