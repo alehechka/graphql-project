@@ -1,0 +1,29 @@
+name: bump-version
+on:
+  push:
+    branches:
+      - test-bump # Change this to your default branch
+jobs:
+  bump-version:
+    name: 'Bump Version'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout source code'
+        uses: 'actions/checkout@main'
+        with:
+          ref: ${{ github.ref }}
+
+      - name: 'Setup Node.js'
+        uses: 'actions/setup-node@master'
+        with:
+          node-version: 12
+
+      - name: 'Automated Version Bump'
+        uses: 'phips28/gh-action-bump-version@master'
+        with:
+          tag-prefix: ''
+          minor-wording: 'MINOR,feature'
+          major-wording: 'MAJOR,BREAKING'
+          rc-wording: 'RC,release'
+          patch-wording: 'patch,fix'
