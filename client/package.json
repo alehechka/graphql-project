@@ -1,0 +1,64 @@
+{
+	"name": "client",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@testing-library/jest-dom": "^4.2.4",
+		"@testing-library/react": "^9.3.2",
+		"@testing-library/user-event": "^7.1.2",
+		"react": "^16.13.1",
+		"react-dom": "^16.13.1",
+		"react-scripts": "3.4.3",
+		"graphql": "^15.3.0"
+	},
+	"devDependencies": {
+		"@types/jest": "^24.0.0",
+		"@types/node": "^12.0.0",
+		"@types/react": "^16.9.0",
+		"@types/react-dom": "^16.9.0",
+		"@lockerstock/react-tsconfig": "^1.0.5",
+		"husky": "^4.3.0",
+		"lint-staged": "^10.4.0",
+		"prettier": "^2.1.2",
+		"typescript": "^4.0.3",
+		"tslint": "^6.1.3"
+	},
+	"scripts": {
+		"prestart": "yarn",
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject",
+		"lint": "tslint --project tsconfig.json -c tslint.commit.json --fix",
+		"pregit": "git add *",
+		"git": "git commit",
+		"postgit": "git push"
+	},
+	"prettier": "@lockerstock/react-tsconfig/.prettierrc.json",
+	"lint-staged": {
+		"src/**/*.{ts,tsx}": [
+			"yarn lint",
+			"prettier --write"
+		]
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "lint-staged"
+		}
+	},
+	"eslintConfig": {
+		"extends": "react-app"
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
+}

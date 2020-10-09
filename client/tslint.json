@@ -1,0 +1,3 @@
+{
+	"extends": "@alehechlockerstockka/react-tsconfig/tslint.json"
+}
