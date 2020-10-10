@@ -1,5 +1,16 @@
-import { Arg, Field, InputType, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Director } from '../entities';
+import {
+	Arg,
+	Field,
+	FieldResolver,
+	InputType,
+	Int,
+	Mutation,
+	Query,
+	Resolver,
+	Root,
+	UseMiddleware,
+} from 'type-graphql';
+import { Director, Movie } from '../entities';
 import { isAuth } from '../middleware';
 
 @InputType()
@@ -19,7 +30,7 @@ class DirectorCreateInput {
 	@Field()
 	firstName: string;
 
-	@Field( )
+	@Field()
 	lastName: string;
 
 	@Field(() => Int)
@@ -28,11 +39,11 @@ class DirectorCreateInput {
 
 @InputType()
 class DirectorQueryInput extends DirectorUpdateInput {
-    @Field(() => String, {nullable: true})
-    id?: string;
+	@Field(() => String, { nullable: true })
+	id?: string;
 }
 
-@Resolver()
+@Resolver(() => Director)
 export class DirectorResolver {
 	@Mutation(() => Director)
 	@UseMiddleware(isAuth)
@@ -44,23 +55,37 @@ export class DirectorResolver {
 		return director;
 	}
 
-	// @Mutation(() => Boolean)
-	// @UseMiddleware(isAuth)
-	// async updateMovie(@Arg('id') id: string, @Arg('input', () => MovieUpdateInput) input: MovieUpdateInput) {
-	// 	await Movie.update({ id }, input);
-	// 	return true;
-	// }
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async updateDirector(
+		@Arg('id') id: string,
+		@Arg('input', () => DirectorUpdateInput) input: DirectorUpdateInput
+	) {
+		await Director.update({ id }, input);
+		return true;
+	}
 
-	// @Mutation(() => Boolean)
-	// @UseMiddleware(isAuth)
-	// async deleteMovie(@Arg('id') id: string) {
-	// 	await Movie.delete({ id });
-	// 	return true;
-	// }
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async deleteDirector(@Arg('id') id: string) {
+		await Director.delete({ id });
+		return true;
+	}
 
 	@Query(() => [Director])
 	@UseMiddleware(isAuth)
 	async directors(@Arg('options', () => DirectorQueryInput, { nullable: true }) options: DirectorQueryInput) {
 		return await Director.find(options);
+	}
+
+	@Query(() => Director, { nullable: true })
+	@UseMiddleware(isAuth)
+	async director(@Arg('id', () => String) id: string) {
+		return await Director.findOne({ id });
+	}
+
+	@FieldResolver()
+	async movies(@Root() director: Director) {
+		return await Movie.find({ directorId: director.id });
 	}
 }

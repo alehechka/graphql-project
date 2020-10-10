@@ -1,5 +1,14 @@
 import { Field, Int, ObjectType } from 'type-graphql';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+	BaseEntity,
+	Column,
+	Entity,
+	JoinTable,
+	ManyToMany,
+	ManyToOne,
+	PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Actor } from './Actor';
 import { Director } from './Director';
 
 @ObjectType()
@@ -15,7 +24,7 @@ export class Movie extends BaseEntity {
 
 	@Field(() => String, { nullable: true })
 	@Column('text', { nullable: true })
-	subtitle: string;
+	subtitle?: string;
 
 	@Field(() => Int)
 	@Column('int', { default: 60 })
@@ -23,9 +32,28 @@ export class Movie extends BaseEntity {
 
 	@Field(() => Int, { nullable: true })
 	@Column('int', { nullable: true })
-	rating: number;
+	rating?: number;
 
-	@Field(() => Director, {nullable: true})
-	@ManyToOne(() => Director, director => director.movies) 
+	@Field()
+	@ManyToOne(() => Director, (director) => director.movies)
 	director: Director;
+
+	@Field()
+	@Column()
+	directorId: string;
+
+	@Field(() => [Actor])
+	@ManyToMany(() => Actor, async (actor) => await actor.movies, { lazy: true })
+	@JoinTable({
+		name: 'movie_actors', // table name for the junction table of this relation
+		joinColumn: {
+			name: 'movieId',
+			referencedColumnName: 'id',
+		},
+		inverseJoinColumn: {
+			name: 'actorId',
+			referencedColumnName: 'id',
+		},
+	})
+	actors: Promise<Actor[]>;
 }

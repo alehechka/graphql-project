@@ -5,7 +5,7 @@ import session from 'express-session';
 import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 import { createConnection, getConnectionOptions } from 'typeorm';
-import { AuthResolver, DirectorResolver, MovieResolver } from './resolvers';
+import { ActorResolver, AuthResolver, DirectorResolver, MovieResolver } from './resolvers';
 
 // I like to use redis for this: https://github.com/tj/connect-redis
 const SQLiteStore = connectSqlite3(session);
@@ -37,7 +37,7 @@ const server = async () => {
 
 	const apolloServer = new ApolloServer({
 		schema: await buildSchema({
-			resolvers: [AuthResolver, MovieResolver, DirectorResolver],
+			resolvers: [AuthResolver, MovieResolver, DirectorResolver, ActorResolver],
 			validate: false,
 		}),
 		context: ({ req, res }) => ({ req, res }),

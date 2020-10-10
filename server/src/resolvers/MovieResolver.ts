@@ -1,12 +1,17 @@
-import { Arg, Field, InputType, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Movie } from '../entities';
+import {
+	Arg,
+	Field,
+	FieldResolver,
+	InputType,
+	Int,
+	Mutation,
+	Query,
+	Resolver,
+	Root,
+	UseMiddleware,
+} from 'type-graphql';
+import { Actor, Director, Movie } from '../entities';
 import { isAuth } from '../middleware';
-
-@InputType()
-class DirectorInput {
-	@Field()
-	id: string
-}
 
 @InputType()
 class MovieUpdateInput {
@@ -21,11 +26,6 @@ class MovieUpdateInput {
 
 	@Field(() => Int, { nullable: true })
 	rating?: number;
-
-	@Field(() => DirectorInput, { nullable: true })
-	director: {
-		id: string
-	};
 }
 
 @InputType()
@@ -36,10 +36,8 @@ class MovieCreateInput extends MovieUpdateInput {
 	@Field(() => Int)
 	minutes: number;
 
-	@Field(() => DirectorInput, { nullable: true })
-	director: {
-		id: string
-	};
+	@Field()
+	directorId: string;
 }
 
 @InputType()
@@ -48,7 +46,7 @@ class MovieQueryInput extends MovieUpdateInput {
 	id?: string;
 }
 
-@Resolver()
+@Resolver(() => Movie)
 export class MovieResolver {
 	@Mutation(() => Movie)
 	@UseMiddleware(isAuth)
@@ -74,9 +72,53 @@ export class MovieResolver {
 		return true;
 	}
 
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async addActor(@Arg('actorId') actorId: string, @Arg('movieId') movieId: string) {
+		try {
+			const movie = await Movie.findOne({ id: movieId }, { relations: ['actors'] });
+			const actor = await Actor.findOne({ id: actorId });
+			const actors = await movie?.actors;
+			console.log(actor, actors);
+			movie!.actors = Promise.resolve([...actors!, actor!]);
+			await movie!.save();
+			return true;
+		} catch (err) {
+			console.error(err);
+			return false;
+		}
+	}
+
+	@Mutation(() => Boolean)
+	@UseMiddleware(isAuth)
+	async removeActor(@Arg('actorId') actorId: string, @Arg('movieId') movieId: string) {
+		try {
+			const movie = await Movie.findOne({ id: movieId }, { relations: ['actors'] });
+			const actors = await movie?.actors;
+			console.log(actors, actorId);
+			movie!.actors = Promise.resolve(actors!.filter((actor) => actor.id !== actorId));
+			await movie!.save();
+			return true;
+		} catch (err) {
+			console.error(err);
+			return false;
+		}
+	}
+
 	@Query(() => [Movie])
 	@UseMiddleware(isAuth)
 	async movies(@Arg('options', () => MovieQueryInput, { nullable: true }) options: MovieQueryInput) {
 		return await Movie.find(options);
+	}
+
+	@Query(() => Movie, { nullable: true })
+	@UseMiddleware(isAuth)
+	async movie(@Arg('id', () => String) id: string) {
+		return await Movie.findOne({ id });
+	}
+
+	@FieldResolver()
+	async director(@Root() movie: Movie) {
+		return await Director.findOne({ id: movie.directorId });
 	}
 }

@@ -19,9 +19,9 @@ export class Director extends BaseEntity {
 
 	@Field(() => Int)
 	@Column('int')
-    age: number;
-    
-    @Field(() => [Movie], {nullable: true})
-    @OneToMany(() => Movie, movie => movie.director) 
-    movies: Movie[];
+	age: number;
+
+	@Field(() => [Movie])
+	@OneToMany(() => Movie, (movie) => movie.director)
+	movies: Movie[];
 }
